@@ -1,5 +1,5 @@
 --project=major_project
---exp_type=resnet50
+--exp_type=xception
 --label=test
 --dataset=imagenet
 --image_size
