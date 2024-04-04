@@ -6,7 +6,6 @@ import pandas as pd
 import wandb
 import socket
 import tensorflow as tf
-import tensorflow_datasets as tfds
 
 from tensorflow.keras.utils import plot_model
 from tensorflow import keras
