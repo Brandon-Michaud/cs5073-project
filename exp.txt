@@ -3,8 +3,8 @@
 --label=test
 --dataset=imagenet
 --image_size
-224
-224
+299
+299
 3
 --epochs=100
 --lrate=0.0001
