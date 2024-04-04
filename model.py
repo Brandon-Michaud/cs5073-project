@@ -17,7 +17,7 @@ def add_transfer(base_model, n_classes, dense_layers, dense_activation):
 
 
 def create_resnet50_model(image_size, dataset, transfer, n_classes, dense_layers, dense_activation, lrate, loss, metrics):
-    base_model = ResNet50(weights=dataset if not transfer else None,
+    base_model = ResNet50(weights=dataset if transfer else None,
                           include_top=not transfer, input_shape=image_size)
     inputs = base_model.input
     outputs = base_model.output
@@ -35,7 +35,7 @@ def create_resnet50_model(image_size, dataset, transfer, n_classes, dense_layers
 
 
 def create_xception_model(image_size, dataset, transfer, n_classes, dense_layers, dense_activation, lrate, loss, metrics):
-    base_model = Xception(weights=dataset if not transfer else None,
+    base_model = Xception(weights=dataset if transfer else None,
                           include_top=not transfer, input_shape=image_size)
 
     inputs = base_model.input
