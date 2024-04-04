@@ -16,12 +16,6 @@ from model import *
 
 
 def generate_fname(args):
-    # Spatial Dropout
-    if args.spatial_dropout is None:
-        sdo_str = ''
-    else:
-        sdo_str = 'sdo_%0.3f_' % (args.spatial_dropout)
-
     # Dropout
     if args.dropout is None:
         do_str = ''
@@ -40,26 +34,10 @@ def generate_fname(args):
     else:
         l2_str = 'L2_%0.6f_' % (args.L2_regularization)
 
-    # Gradient clipping
-    if args.grad_clip is None:
-        gc_str = ''
-    else:
-        gc_str = 'gc_%0.6f_' % (args.grad_clip)
-
-    if args.exp_type == 'rnn':
-        rnns_str = '_'.join(str(x) for x in args.rnn_layers)
-        dense_layers_str = '_'.join(str(x) for x in args.dense_layers)
-        return (f'{args.results_path}/{args.exp_type}_rnns_{rnns_str}_ract_{args.rnn_activation}_dense_'
-                f'{dense_layers_str}_dact_{args.dense_activation}_{sdo_str}{do_str}{l1_str}{l2_str}{gc_str}lrate_'
-                f'{args.lrate:0.6f}_rot_{args.rotation}')
-    elif args.exp_type == 'cnn':
-        conv_filter_str = '_'.join(str(x) for x in args.conv_layers)
-        kernel_size_str = '_'.join(str(x) for x in args.kernel_sizes)
-        dense_layers_str = '_'.join(str(x) for x in args.dense_layers)
-        return (f'{args.results_path}/{args.exp_type}_filters_{conv_filter_str}_ksizes_{kernel_size_str}_pool_'
-                f'{args.pool}_pad_{args.padding}_cact_{args.conv_activation}_dense_{dense_layers_str}_dact_'
-                f'{args.dense_activation}_{sdo_str}{do_str}{l1_str}{l2_str}{gc_str}lrate_{args.lrate:0.6f}_rot_'
-                f'{args.rotation}')
+    if args.exp_type == 'resnet50':
+        return f'{args.results_path}/resnet50'
+    elif args.exp_type == 'xception':
+        return f'{args.results_path}/xception'
     else:
         assert False
 
