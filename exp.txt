@@ -2,6 +2,10 @@
 --exp_type=resnet50
 --label=test
 --dataset=imagenet
+--image_size
+224
+224
+3
 --epochs=100
 --lrate=0.0001
 --nogo

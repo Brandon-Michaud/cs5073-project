@@ -65,12 +65,13 @@ def generate_fname(args):
 
 
 def create_model(args):
+    image_size = (args.image_size[0], args.image_size[1], args.image_size[2])
     if args.exp_type == 'resnet50':
-        return create_resnet50_model(args.image_size, args.dataset, args.transfer, args.n_classes, args.dense,
+        return create_resnet50_model(image_size, args.dataset, args.transfer, args.n_classes, args.dense,
                                      args.activation_dense, args.lrate, tf.keras.losses.SparseCategoricalCrossentropy(),
                                      [tf.keras.metrics.SparseCategoricalAccuracy()])
     elif args.exp_type == 'xception':
-        return create_xception_model(args.image_size, args.dataset, args.transfer, args.n_classes, args.dense,
+        return create_xception_model(image_size, args.dataset, args.transfer, args.n_classes, args.dense,
                                      args.activation_dense, args.lrate, tf.keras.losses.SparseCategoricalCrossentropy(),
                                      [tf.keras.metrics.SparseCategoricalAccuracy()])
     else:
