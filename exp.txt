@@ -2,7 +2,6 @@
 --exp_type=resnet50
 --label=test
 --dataset=imagenet
---transfer
 --image_size
 32
 32
