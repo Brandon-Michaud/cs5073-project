@@ -122,7 +122,7 @@ def execute_exp(args=None, multi_gpus=False):
     print(args)
 
     # Output file base and pkl file
-    fbase = generate_fname(args, args)
+    fbase = generate_fname(args)
     print(fbase)
     fname_out = "%s_results.pkl" % fbase
 
@@ -150,10 +150,6 @@ def execute_exp(args=None, multi_gpus=False):
 
     # Log hostname
     wandb.log({'hostname': socket.gethostname()})
-
-    # Log model design image
-    if args.render:
-        wandb.log({'model architecture': wandb.Image(render_fname)})
 
     # Callbacks
     cbs = []
