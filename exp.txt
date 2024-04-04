@@ -1,11 +1,11 @@
 --project=major_project
---exp_type=xception
+--exp_type=resnet50
 --label=test
 --dataset=imagenet
 --transfer
 --image_size
-299
-299
+32
+32
 3
 --epochs=100
 --lrate=0.0001
