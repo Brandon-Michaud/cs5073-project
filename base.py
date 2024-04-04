@@ -83,13 +83,9 @@ def execute_exp(args=None, multi_gpus=False):
         parser = create_parser()
         args = parser.parse_args([])
 
-    print(args.exp_index)
-
     # Scale the batch size with the number of GPUs
     if multi_gpus > 1:
         args.batch = args.batch * multi_gpus
-
-    print('Batch size', args.batch)
 
     # Create the TF datasets for training, validation, testing
 
