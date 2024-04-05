@@ -11,6 +11,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --chdir=/home/cs504319/cs5073-project
 
+. /home/fagg/tf_setup.sh
 conda activate anne
 
 
