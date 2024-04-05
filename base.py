@@ -74,6 +74,7 @@ def execute_exp(args=None, multi_gpus=False):
         print('Starting data flow')
 
     # Load individual files (all objects)
+    (x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
     ds_train, ds_validation, ds_testing = None, None, None
 
     # Build the model
