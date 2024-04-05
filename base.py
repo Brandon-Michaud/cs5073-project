@@ -8,6 +8,7 @@ import socket
 import tensorflow as tf
 
 from tensorflow.keras.utils import plot_model
+import tensorflow_datasets as tfds
 from tensorflow import keras
 
 # Provided

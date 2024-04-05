@@ -11,8 +11,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --chdir=/home/cs504319/cs5073-project
 
-. /home/fagg/tf_setup.sh
-conda activate dnn_2024_02
+conda activate anne
 
 
 python base.py -vv @exp.txt @oscer.txt --cpus_per_task $SLURM_CPUS_PER_TASK
