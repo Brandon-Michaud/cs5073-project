@@ -1,46 +1,33 @@
-import sys
 import os
-import argparse
 import pickle
-import pandas as pd
 import wandb
 import socket
 import tensorflow as tf
 
 from tensorflow.keras.utils import plot_model
-import tensorflow_datasets as tfds
 from tensorflow import keras
 
-# Provided
 from parser import *
 from model import *
 
 
 def generate_fname(args):
-    # Dropout
-    if args.dropout is None:
-        do_str = ''
+    if args.transfer:
+        transfer_str = f'_transfer_{args.transfer_dataset}'
     else:
-        do_str = 'do_%0.3f_' % (args.dropout)
-
-    # L1 regularization
-    if args.L1_regularization is None:
-        l1_str = ''
-    else:
-        l1_str = 'L1_%0.6f_' % (args.L1_regularization)
-
-    # L2 regularization
-    if args.L2_regularization is None:
-        l2_str = ''
-    else:
-        l2_str = 'L2_%0.6f_' % (args.L2_regularization)
+        transfer_str = ''
 
     if args.exp_type == 'resnet50':
-        return f'{args.results_path}/resnet50'
+        return f'{args.results_path}/resnet50_dataset_{args.dataset}{transfer_str}'
     elif args.exp_type == 'xception':
-        return f'{args.results_path}/xception'
+        return f'{args.results_path}/xception_dataset_{args.dataset}{transfer_str}'
     else:
         assert False
+
+
+def load_data(dataset):
+    if dataset == 'cifar100':
+        return keras.datasets.cifar100.load_data()
 
 
 def create_model(args):
@@ -75,8 +62,7 @@ def execute_exp(args=None, multi_gpus=False):
         print('Starting data flow')
 
     # Load individual files (all objects)
-    (x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
-    ds_train, ds_validation, ds_testing = None, None, None
+    (x_train, y_train), (x_test, y_test) = load_data(args.transfer_dataset)
 
     # Build the model
     if args.verbose >= 3:
@@ -126,7 +112,7 @@ def execute_exp(args=None, multi_gpus=False):
 
     #####
     # Start wandb
-    run = wandb.init(project=args.project, name='%s_R%d' % (args.label, args.rotation), notes=fbase, config=vars(args))
+    run = wandb.init(project=args.project, name='%s' % args.label, notes=fbase, config=vars(args))
 
     # Log hostname
     wandb.log({'hostname': socket.gethostname()})
@@ -145,31 +131,31 @@ def execute_exp(args=None, multi_gpus=False):
         print('Fitting model')
 
     # Learn
-    history = model.fit(ds_train,
+    history = model.fit(x=x_train,
+                        y=y_train,
                         epochs=args.epochs,
                         steps_per_epoch=args.steps_per_epoch,
-                        use_multiprocessing=True,
                         verbose=args.verbose >= 2,
-                        validation_data=ds_validation,
+                        validation_data=(x_test, y_test),
                         validation_steps=None,
                         callbacks=cbs)
 
     # Generate results data
-    results = {}
-
-    # Test set
-    if ds_testing is not None:
-        print('#################')
-        print('Testing')
-        results['predict_testing_eval'] = model.evaluate(ds_testing)
-        wandb.log({'final_test_loss': results['predict_testing_eval'][0]})
-        wandb.log({'final_test_sparse_categorical_accuracy': results['predict_testing_eval'][1]})
-
-    # Save results
-    fbase = generate_fname(args)
-    results['fname_base'] = fbase
-    with open("%s_results.pkl" % fbase, "wb") as fp:
-        pickle.dump(results, fp)
+    # results = {}
+    #
+    # # Test set
+    # if ds_testing is not None:
+    #     print('#################')
+    #     print('Testing')
+    #     results['predict_testing_eval'] = model.evaluate(ds_testing)
+    #     wandb.log({'final_test_loss': results['predict_testing_eval'][0]})
+    #     wandb.log({'final_test_sparse_categorical_accuracy': results['predict_testing_eval'][1]})
+    #
+    # # Save results
+    # fbase = generate_fname(args)
+    # results['fname_base'] = fbase
+    # with open("%s_results.pkl" % fbase, "wb") as fp:
+    #     pickle.dump(results, fp)
 
     # Save model
     if args.save_model:

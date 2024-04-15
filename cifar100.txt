@@ -1,0 +1,7 @@
+--transfer
+--transfer_dataset=cifar100
+--image_size
+32
+32
+3
+--n_classes=100

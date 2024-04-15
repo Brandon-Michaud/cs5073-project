@@ -10,6 +10,7 @@ def create_parser():
 
     # High-level commands
     parser.add_argument('--nogo', action='store_true', help='Do not perform the experiment')
+    parser.add_argument('--force', action='store_true', help='Force perform the experiment')
     parser.add_argument('--verbose', '-v', action='count', default=0, help="Verbosity level")
 
     # CPU/GPU
