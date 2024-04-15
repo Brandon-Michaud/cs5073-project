@@ -4,3 +4,4 @@
 --dataset=imagenet
 --epochs=100
 --lrate=0.0001
+--gpu
