@@ -42,8 +42,8 @@ def create_parser():
 
     # Regularization parameters
     parser.add_argument('--dropout', type=float, default=None, help='Dropout rate')
-    parser.add_argument('--L1_regularization', '--l1', type=float, default=None, help="L1 regularization parameter")
-    parser.add_argument('--L2_regularization', '--l2', type=float, default=None, help="L2 regularization parameter")
+    parser.add_argument('--l1', type=float, default=None, help="L1 regularization parameter")
+    parser.add_argument('--l2', type=float, default=None, help="L2 regularization parameter")
 
     # Early stopping
     parser.add_argument('--min_delta', type=float, default=0.0, help="Minimum delta for early termination")
