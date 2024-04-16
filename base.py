@@ -6,6 +6,7 @@ import tensorflow as tf
 
 from tensorflow.keras.utils import plot_model
 from tensorflow import keras
+from tensorflow.keras.utils import to_categorical
 
 from parser import *
 from model import *
@@ -27,7 +28,12 @@ def generate_fname(args):
 
 def load_data(dataset):
     if dataset == 'cifar100':
-        return keras.datasets.cifar100.load_data()
+        (x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
+        x_train = tf.keras.applications.resnet50.preprocess_input(x_train)
+        x_test = tf.keras.applications.resnet50.preprocess_input(x_test)
+        y_train = to_categorical(y_train, args.n_classes)
+        y_test = to_categorical(y_test, args.n_classes)
+        return x_train, y_train, x_test, y_test
 
 
 def create_model(args):
@@ -35,13 +41,13 @@ def create_model(args):
     if args.exp_type == 'resnet50':
         return create_resnet50_model(image_size, args.dataset, args.transfer, args.n_classes, args.dense,
                                      args.activation_dense, args.dropout, args.l2,
-                                     args.lrate, tf.keras.losses.SparseCategoricalCrossentropy(),
-                                     [tf.keras.metrics.SparseCategoricalAccuracy()])
+                                     args.lrate, tf.keras.losses.CategoricalCrossentropy(),
+                                     [tf.keras.metrics.CategoricalAccuracy()])
     elif args.exp_type == 'xception':
         return create_xception_model(image_size, args.dataset, args.transfer, args.n_classes, args.dense,
                                      args.activation_dense, args.dropout, args.l2,
-                                     args.lrate, tf.keras.losses.SparseCategoricalCrossentropy(),
-                                     [tf.keras.metrics.SparseCategoricalAccuracy()])
+                                     args.lrate, tf.keras.losses.CategoricalCrossentropy(),
+                                     [tf.keras.metrics.CategoricalAccuracy()])
     else:
         assert False, 'unrecognized model'
 
@@ -64,7 +70,7 @@ def execute_exp(args=None, multi_gpus=False):
         print('Starting data flow')
 
     # Load individual files (all objects)
-    (x_train, y_train), (x_test, y_test) = load_data(args.transfer_dataset)
+    x_train, y_train, x_test, y_test = load_data(args.transfer_dataset)
 
     # Build the model
     if args.verbose >= 3:
