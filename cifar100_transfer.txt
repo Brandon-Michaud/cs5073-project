@@ -11,6 +11,7 @@
 --n_classes=100
 --dense
 1024
+--activation_dense=elu
 --epochs=100
 --lrate=0.00001
 --gpu

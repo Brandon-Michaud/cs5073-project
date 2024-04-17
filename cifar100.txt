@@ -7,8 +7,6 @@
 32
 3
 --n_classes=100
---dense
-1024
 --epochs=100
 --lrate=0.0001
 --gpu

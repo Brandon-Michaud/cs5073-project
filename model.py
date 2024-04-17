@@ -5,7 +5,7 @@ from tensorflow.keras.models import Model
 from tensorflow import keras
 
 
-def add_transfer(base_model, n_classes, dense_layers, dense_activation, dropout=None, regularization=None):
+def add_transfer(base_model, dense_layers, dense_activation, dropout=None, regularization=None):
     base_model.trainable = False
     if regularization is not None:
         regularization = tf.keras.regularizers.l2(l2=regularization)
@@ -15,20 +15,20 @@ def add_transfer(base_model, n_classes, dense_layers, dense_activation, dropout=
     for n_nodes in dense_layers:
         tensor = Dense(n_nodes, activation=dense_activation, kernel_regularizer=regularization)(tensor)
         tensor = Dropout(dropout)(tensor)
-    predictions = Dense(n_classes, activation='softmax')(tensor)
-    return predictions
+    return tensor
 
 
 def create_resnet50_model(image_size, dataset, transfer, n_classes, dense_layers, dense_activation, dropout,
                           regularization, lrate, loss, metrics):
     base_model = ResNet50(weights=dataset if transfer else None,
-                          include_top=not transfer, input_shape=image_size)
+                          include_top=False, input_shape=image_size)
     inputs = base_model.input
     outputs = base_model.output
 
     if transfer:
-        outputs = add_transfer(base_model, n_classes, dense_layers, dense_activation, dropout=dropout,
+        outputs = add_transfer(base_model, dense_layers, dense_activation, dropout=dropout,
                                regularization=regularization)
+    outputs = Dense(n_classes, activation='softmax')(outputs)
 
     model = Model(inputs=inputs, outputs=outputs)
 
@@ -42,14 +42,15 @@ def create_resnet50_model(image_size, dataset, transfer, n_classes, dense_layers
 def create_xception_model(image_size, dataset, transfer, n_classes, dense_layers, dense_activation, dropout,
                           regularization, lrate, loss, metrics):
     base_model = Xception(weights=dataset if transfer else None,
-                          include_top=not transfer, input_shape=image_size)
+                          include_top=False, input_shape=image_size)
 
     inputs = base_model.input
     outputs = base_model.output
 
     if transfer:
-        outputs = add_transfer(base_model, n_classes, dense_layers, dense_activation, dropout=dropout,
+        outputs = add_transfer(base_model, dense_layers, dense_activation, dropout=dropout,
                                regularization=regularization)
+    outputs = Dense(n_classes, activation='softmax')(outputs)
 
     model = Model(inputs=inputs, outputs=outputs)
 
