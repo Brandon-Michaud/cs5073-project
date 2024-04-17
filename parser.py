@@ -35,7 +35,7 @@ def create_parser():
     parser.add_argument('--lrate', type=float, default=0.001, help="Learning rate")
 
     # Hidden unit parameters
-    parser.add_argument('--dense', nargs='+', type=int, default=[1024],
+    parser.add_argument('--dense', nargs='+', type=int, default=[],
                         help='Number of dense units per layer (sequence of ints)')
     parser.add_argument('--activation_dense', type=str, default='elu', help='Activation function for dense layers')
     parser.add_argument('--batch_normalization', action='store_true', help='Turn on batch normalization')
