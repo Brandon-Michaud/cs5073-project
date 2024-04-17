@@ -6,7 +6,7 @@
 #SBATCH --mem=80G
 #SBATCH --output=outputs/job_%j_stdout.txt
 #SBATCH --error=outputs/job_%j_stderr.txt
-#SBATCH --time=00:30:00
+#SBATCH --time=06:00:00
 #SBATCH --job-name=test
 #SBATCH --mail-user=brandondmichaud@ou.edu
 #SBATCH --mail-type=ALL

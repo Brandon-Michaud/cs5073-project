@@ -1,7 +1,9 @@
 --project=major_project
 --exp_type=resnet50
 --label=test
---dataset=cifar100
+--dataset=imagenet
+--transfer
+--transfer_dataset=cifar100
 --image_size
 32
 32
@@ -10,5 +12,7 @@
 --dense
 1024
 --epochs=100
---lrate=0.0001
+--lrate=0.00001
 --gpu
+--dropout=0.2
+--l2=0.001
