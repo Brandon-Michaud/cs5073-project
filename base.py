@@ -70,7 +70,7 @@ def execute_exp(args=None, multi_gpus=False):
         print('Starting data flow')
 
     # Load individual files (all objects)
-    x_train, y_train, x_test, y_test = load_data(args.transfer_dataset)
+    x_train, y_train, x_test, y_test = load_data(args.transfer_dataset if args.transfer else args.dataset)
 
     # Build the model
     if args.verbose >= 3:
