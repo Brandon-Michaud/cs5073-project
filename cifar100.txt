@@ -6,7 +6,12 @@
 32
 32
 3
+--dense
+1024
+--activation_dense=elu
 --n_classes=100
 --epochs=100
 --lrate=0.0001
+--dropout=0.2
+--l2=0.001
 --gpu

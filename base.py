@@ -120,7 +120,9 @@ def execute_exp(args=None, multi_gpus=False):
 
     #####
     # Start wandb
-    run = wandb.init(project=args.project, name='%s' % args.label, notes=fbase, config=vars(args))
+    run = wandb.init(project=args.project,
+                     name=f'{args.exp_type}_dataset_{args.dataset}{f"_transfer_{args.transfer_dataset}" if args.transer else ""}',
+                     notes=fbase, config=vars(args))
 
     # Log hostname
     wandb.log({'hostname': socket.gethostname()})
