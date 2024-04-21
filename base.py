@@ -38,16 +38,40 @@ def load_data(dataset):
 
 def create_model(args):
     image_size = (args.image_size[0], args.image_size[1], args.image_size[2])
+
+    # Create optimizer
+    if args.opt == 'SGD':
+        opt = tf.keras.optimizers.SGD(learning_rate=args.lrate, momentum=args.momentum, decay=args.decay)
+    elif args.opt == 'Adam':
+        opt = tf.keras.optimizers.Adam(learning_rate=args.lrate)
+    else:
+        assert False, 'Unknown optimizer'
+
+    # Create model
     if args.exp_type == 'resnet50':
-        return create_resnet50_model(image_size, args.dataset, args.transfer, args.n_classes, args.dense,
-                                     args.activation_dense, args.dropout, args.l2,
-                                     args.lrate, tf.keras.losses.CategoricalCrossentropy(),
-                                     [tf.keras.metrics.CategoricalAccuracy()])
+        return create_resnet50_model(image_size=image_size,
+                                     dataset=args.dataset,
+                                     transfer=args.transfer,
+                                     n_classes=args.n_classes,
+                                     dense_layers=args.dense,
+                                     dense_activation=args.activation_dense,
+                                     dropout=args.dropout,
+                                     regularization=args.l2,
+                                     opt=opt,
+                                     loss=tf.keras.losses.CategoricalCrossentropy(),
+                                     metrics=[tf.keras.metrics.CategoricalAccuracy()])
     elif args.exp_type == 'xception':
-        return create_xception_model(image_size, args.dataset, args.transfer, args.n_classes, args.dense,
-                                     args.activation_dense, args.dropout, args.l2,
-                                     args.lrate, tf.keras.losses.CategoricalCrossentropy(),
-                                     [tf.keras.metrics.CategoricalAccuracy()])
+        return create_xception_model(image_size=image_size,
+                                     dataset=args.dataset,
+                                     transfer=args.transfer,
+                                     n_classes=args.n_classes,
+                                     dense_layers=args.dense,
+                                     dense_activation=args.activation_dense,
+                                     dropout=args.dropout,
+                                     regularization=args.l2,
+                                     opt=opt,
+                                     loss=tf.keras.losses.CategoricalCrossentropy(),
+                                     metrics=[tf.keras.metrics.CategoricalAccuracy()])
     else:
         assert False, 'unrecognized model'
 
@@ -129,9 +153,12 @@ def execute_exp(args=None, multi_gpus=False):
 
     # Callbacks
     cbs = []
-    early_stopping_cb = keras.callbacks.EarlyStopping(patience=args.patience, restore_best_weights=True,
-                                                      min_delta=args.min_delta, monitor=args.monitor)
+    early_stopping_cb = keras.callbacks.EarlyStopping(patience=args.es_patience, restore_best_weights=True,
+                                                      min_delta=args.es_min_delta, monitor=args.es_monitor)
+    reduce_lr_cb = keras.callbacks.ReduceLROnPlateau(monitor=args.lra_monitor, factor=args.lra_factor,
+                                                     patience=args.lra_patience, min_delta=args.lra_min_delta)
     cbs.append(early_stopping_cb)
+    cbs.append(reduce_lr_cb)
 
     # Weights and Biases
     wandb_metrics_cb = wandb.keras.WandbMetricsLogger()

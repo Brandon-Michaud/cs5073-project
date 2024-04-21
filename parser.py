@@ -31,8 +31,20 @@ def create_parser():
     parser.add_argument('--results_path', type=str, default='./results', help='Results directory')
 
     # Specific experiment configuration
+    parser.add_argument('--opt', type=str, default='SGD', help='Optimizer to use')
     parser.add_argument('--epochs', type=int, default=100, help='Training epochs')
     parser.add_argument('--lrate', type=float, default=0.001, help="Learning rate")
+    parser.add_argument('--momentum', type=float, default=0.9, help='Momentum in optimizer')
+    parser.add_argument('--decay', type=float, default=0.0001, help='Weight decay in optimizer')
+
+    # Learning rate annealing
+    parser.add_argument('--lra_monitor', type=str, default='val_loss',
+                        help='What to monitor for learning rate annealing')
+    parser.add_argument('--lra_factor', type=float, default=0.1,
+                        help='Reduction factor for learning rate annealing')
+    parser.add_argument('--lra_patience', type=int, default=10, help='Patience for learning rate annealing')
+    parser.add_argument('--lra_min_delta', type=float, default=0.0001,
+                        help='Minimum change to not be considered plateaued in learning rate annealing')
 
     # Hidden unit parameters
     parser.add_argument('--dense', nargs='+', type=int, default=[],
@@ -46,9 +58,9 @@ def create_parser():
     parser.add_argument('--l2', type=float, default=None, help="L2 regularization parameter")
 
     # Early stopping
-    parser.add_argument('--min_delta', type=float, default=0.0, help="Minimum delta for early termination")
-    parser.add_argument('--patience', type=int, default=100, help="Patience for early termination")
-    parser.add_argument('--monitor', type=str, default="val_loss", help="Metric to monitor for early termination")
+    parser.add_argument('--es_min_delta', type=float, default=0.0, help="Minimum delta for early termination")
+    parser.add_argument('--es_patience', type=int, default=100, help="Patience for early termination")
+    parser.add_argument('--es_monitor', type=str, default="val_loss", help="Metric to monitor for early termination")
 
     # Training parameters
     parser.add_argument('--batch', type=int, default=10, help="Training set batch size")

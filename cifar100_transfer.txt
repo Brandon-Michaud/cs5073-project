@@ -1,6 +1,6 @@
 --project=major_project
 --exp_type=resnet50
---label=test
+--label=cifar100_transfer_resnet50
 --dataset=imagenet
 --transfer
 --transfer_dataset=cifar100
@@ -8,12 +8,7 @@
 32
 32
 3
---n_classes=100
 --dense
 1024
 --activation_dense=elu
---epochs=100
---lrate=0.00001
---gpu
---dropout=0.2
---l2=0.001
+--n_classes=100

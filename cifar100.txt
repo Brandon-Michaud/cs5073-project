@@ -1,6 +1,6 @@
 --project=major_project
 --exp_type=resnet50
---label=test
+--label=cifar100_resnet50
 --dataset=cifar100
 --image_size
 32
@@ -10,8 +10,3 @@
 1024
 --activation_dense=elu
 --n_classes=100
---epochs=100
---lrate=0.0001
---dropout=0.2
---l2=0.001
---gpu

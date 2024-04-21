@@ -5,7 +5,12 @@ from tensorflow.keras.models import Model
 from tensorflow import keras
 
 
-def add_top(tensor, dense_layers, dense_activation, n_classes, dropout=None, regularization=None):
+def add_top(tensor,
+            dense_layers,
+            dense_activation,
+            n_classes,
+            dropout=None,
+            regularization=None):
     if regularization is not None:
         regularization = tf.keras.regularizers.l2(l2=regularization)
 
@@ -17,8 +22,17 @@ def add_top(tensor, dense_layers, dense_activation, n_classes, dropout=None, reg
     return tensor
 
 
-def create_resnet50_model(image_size, dataset, transfer, n_classes, dense_layers, dense_activation, dropout,
-                          regularization, lrate, loss, metrics):
+def create_resnet50_model(image_size,
+                          dataset,
+                          transfer,
+                          n_classes,
+                          dense_layers,
+                          dense_activation='elu',
+                          dropout=None,
+                          regularization=None,
+                          opt=None,
+                          loss=None,
+                          metrics=None):
     base_model = ResNet50(weights=dataset if transfer else None,
                           include_top=False, input_shape=image_size)
     inputs = base_model.input
@@ -31,15 +45,22 @@ def create_resnet50_model(image_size, dataset, transfer, n_classes, dense_layers
 
     model = Model(inputs=inputs, outputs=outputs)
 
-    opt = tf.keras.optimizers.Adam(learning_rate=lrate)
-
     model.compile(loss=loss, optimizer=opt, metrics=metrics)
 
     return model
 
 
-def create_xception_model(image_size, dataset, transfer, n_classes, dense_layers, dense_activation, dropout,
-                          regularization, lrate, loss, metrics):
+def create_xception_model(image_size,
+                          dataset,
+                          transfer,
+                          n_classes,
+                          dense_layers,
+                          dense_activation='elu',
+                          dropout=None,
+                          regularization=None,
+                          opt=None,
+                          loss=None,
+                          metrics=None):
     base_model = Xception(weights=dataset if transfer else None,
                           include_top=False, input_shape=image_size)
 
@@ -52,8 +73,6 @@ def create_xception_model(image_size, dataset, transfer, n_classes, dense_layers
                       regularization=regularization)
 
     model = Model(inputs=inputs, outputs=outputs)
-
-    opt = tf.keras.optimizers.Adam(learning_rate=lrate)
 
     model.compile(loss=loss, optimizer=opt, metrics=metrics)
 
