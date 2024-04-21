@@ -3,7 +3,7 @@
 --lrate=0.1
 --momentum=0.9
 --decay=0.0001
---lra_montior=val_loss
+--lra_monitor=val_loss
 --lra_factor=0.1
 --lra_patience=10
 --lra_min_delta=0.0001
