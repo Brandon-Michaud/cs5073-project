@@ -171,7 +171,7 @@ def execute_exp(args=None, multi_gpus=False):
     history = model.fit(x=x_train,
                         y=y_train,
                         epochs=args.epochs,
-                        steps_per_epoch=args.steps_per_epoch,
+                        batch_size=args.batch,
                         verbose=args.verbose >= 2,
                         validation_data=(x_test, y_test),
                         validation_steps=None,
