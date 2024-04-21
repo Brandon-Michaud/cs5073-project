@@ -1,2 +1,2 @@
 --gpu
---batch=512
+--batch=256
