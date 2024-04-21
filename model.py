@@ -17,7 +17,8 @@ def add_top(tensor,
     tensor = GlobalAveragePooling2D()(tensor)
     for n_nodes in dense_layers:
         tensor = Dense(n_nodes, activation=dense_activation, kernel_regularizer=regularization)(tensor)
-        tensor = Dropout(dropout)(tensor)
+        if dropout is not None:
+            tensor = Dropout(dropout)(tensor)
     tensor = Dense(n_classes, activation='softmax')(tensor)
     return tensor
 
