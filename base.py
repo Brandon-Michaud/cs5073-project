@@ -41,7 +41,7 @@ def create_model(args):
 
     # Create optimizer
     if args.opt == 'SGD':
-        opt = tf.keras.optimizers.SGD(learning_rate=args.lrate, momentum=args.momentum, decay=args.decay)
+        opt = tf.keras.optimizers.SGD(learning_rate=args.lrate, momentum=args.momentum, weight_decay=args.decay)
     elif args.opt == 'Adam':
         opt = tf.keras.optimizers.Adam(learning_rate=args.lrate)
     else:
