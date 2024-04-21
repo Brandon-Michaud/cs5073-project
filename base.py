@@ -29,8 +29,8 @@ def generate_fname(args):
 def load_data(dataset):
     if dataset == 'cifar100':
         (x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
-        x_train = tf.keras.applications.resnet50.preprocess_input(x_train)
-        x_test = tf.keras.applications.resnet50.preprocess_input(x_test)
+        x_train = tf.keras.applications.resnet_v2.preprocess_input(x_train)
+        x_test = tf.keras.applications.resnet_v2.preprocess_input(x_test)
         y_train = to_categorical(y_train, args.n_classes)
         y_test = to_categorical(y_test, args.n_classes)
         return x_train, y_train, x_test, y_test
