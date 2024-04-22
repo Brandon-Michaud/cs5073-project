@@ -12,3 +12,5 @@
 1024
 --activation_dense=elu
 --n_classes=100
+--opt=adam
+--lrate=0.001

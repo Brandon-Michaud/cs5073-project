@@ -15,4 +15,4 @@
 . /home/fagg/tf_setup.sh
 conda activate anne
 
-python base.py -vv @cifar100_resnet50_transfer.txt @oscer.txt --cpus_per_task $SLURM_CPUS_PER_TASK
+python base.py -vv @cifar100_transfer_xception.txt @oscer.txt --cpus_per_task $SLURM_CPUS_PER_TASK
