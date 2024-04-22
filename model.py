@@ -1,8 +1,15 @@
 import tensorflow as tf
 from tensorflow.keras.applications import ResNet50, Xception
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
+from tensorflow.keras.layers import Input, Lambda, GlobalAveragePooling2D, Dense, Dropout, RandomFlip, RandomZoom, RandomRotation
 from tensorflow.keras.models import Model
 from tensorflow import keras
+
+
+def preprocess_image(tensor):
+    tensor = RandomFlip('horizontal')(tensor)
+    tensor = RandomRotation(0.1)(tensor)
+    tensor = RandomZoom(0.1)(tensor)
+    return tensor
 
 
 def add_top(tensor,
@@ -34,14 +41,24 @@ def create_resnet50_model(image_size,
                           opt=None,
                           loss=None,
                           metrics=None):
-    base_model = ResNet50(weights=dataset if transfer else None,
-                          include_top=False, input_shape=image_size)
-    inputs = base_model.input
-    outputs = base_model.output
+    # Input
+    tensor = Input(shape=image_size)
+    inputs = tensor
 
+    # Preprocessing
+    tensor = preprocess_image(tensor)
+    tensor = Lambda(lambda image: tf.image.resize(image, (224, 224)))(tensor)
+    tensor = tf.keras.applications.resnet50.preprocess_input(tensor)
+
+    # Base model
+    base_model = ResNet50(weights=dataset if transfer else None,
+                          include_top=False, input_shape=(224, 224, 3))
+    tensor = base_model(tensor)
+
+    # Add top
     if transfer:
         base_model.trainable = False
-    outputs = add_top(outputs, dense_layers, dense_activation, n_classes, dropout=dropout,
+    outputs = add_top(tensor, dense_layers, dense_activation, n_classes, dropout=dropout,
                       regularization=regularization)
 
     model = Model(inputs=inputs, outputs=outputs)
@@ -62,15 +79,24 @@ def create_xception_model(image_size,
                           opt=None,
                           loss=None,
                           metrics=None):
+    # Input
+    tensor = Input(shape=image_size)
+    inputs = tensor
+
+    # Preprocessing
+    tensor = preprocess_image(tensor)
+    tensor = Lambda(lambda image: tf.image.resize(image, (224, 224)))(tensor)
+    tensor = tf.keras.applications.xception.preprocess_input(tensor)
+
+    # Base model
     base_model = Xception(weights=dataset if transfer else None,
-                          include_top=False, input_shape=image_size)
+                          include_top=False, input_shape=(224, 224, 3))
+    tensor = base_model(tensor)
 
-    inputs = base_model.input
-    outputs = base_model.output
-
+    # Add top
     if transfer:
         base_model.trainable = False
-    outputs = add_top(outputs, dense_layers, dense_activation, n_classes, dropout=dropout,
+    outputs = add_top(tensor, dense_layers, dense_activation, n_classes, dropout=dropout,
                       regularization=regularization)
 
     model = Model(inputs=inputs, outputs=outputs)
