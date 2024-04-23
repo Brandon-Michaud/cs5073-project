@@ -12,5 +12,10 @@
 1024
 --activation_dense=elu
 --n_classes=100
---opt=Adam
---lrate=0.001
+--opt=SGD
+--lrate=0.045
+--momentum=0.9
+--lrd
+--lrd_rate=0.94
+--lrd_steps=2
+--nogo

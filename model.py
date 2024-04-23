@@ -37,10 +37,7 @@ def create_resnet50_model(image_size,
                           dense_layers,
                           dense_activation='elu',
                           dropout=None,
-                          regularization=None,
-                          opt=None,
-                          loss=None,
-                          metrics=None):
+                          regularization=None):
     # Input
     tensor = Input(shape=image_size)
     inputs = tensor
@@ -63,8 +60,6 @@ def create_resnet50_model(image_size,
 
     model = Model(inputs=inputs, outputs=outputs)
 
-    model.compile(loss=loss, optimizer=opt, metrics=metrics)
-
     return model
 
 
@@ -75,10 +70,7 @@ def create_xception_model(image_size,
                           dense_layers,
                           dense_activation='elu',
                           dropout=None,
-                          regularization=None,
-                          opt=None,
-                          loss=None,
-                          metrics=None):
+                          regularization=None):
     # Input
     tensor = Input(shape=image_size)
     inputs = tensor
@@ -100,7 +92,5 @@ def create_xception_model(image_size,
                       regularization=regularization)
 
     model = Model(inputs=inputs, outputs=outputs)
-
-    model.compile(loss=loss, optimizer=opt, metrics=metrics)
 
     return model

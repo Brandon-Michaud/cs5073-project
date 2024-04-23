@@ -36,44 +36,54 @@ def load_data(dataset):
         return x_train, y_train, x_test, y_test
 
 
-def create_model(args):
+def create_model(args, train_epoch_size):
     image_size = (args.image_size[0], args.image_size[1], args.image_size[2])
 
     # Create optimizer
+    if args.lrd:
+        decay_steps = args.lrd_steps * (train_epoch_size / args.batch)
+        learning_rate = tf.keras.optimizers.schedules.ExponentialDecay(args.lrate,
+                                                                       decay_steps=decay_steps,
+                                                                       decay_rate=args.lrd_rate,
+                                                                       staircase=True)
+    else:
+        learning_rate = args.lrate
     if args.opt == 'SGD':
-        opt = tf.keras.optimizers.SGD(learning_rate=args.lrate, momentum=args.momentum, weight_decay=args.decay)
+        opt = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=args.momentum, weight_decay=args.decay)
     elif args.opt == 'Adam':
-        opt = tf.keras.optimizers.Adam(learning_rate=args.lrate)
+        opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     else:
         assert False, 'Unknown optimizer'
 
+    # Create loss and metrics
+    loss = tf.keras.losses.CategoricalCrossentropy()
+    metrics = [tf.keras.metrics.CategoricalAccuracy()]
+
     # Create model
     if args.exp_type == 'resnet50':
-        return create_resnet50_model(image_size=image_size,
-                                     dataset=args.dataset,
-                                     transfer=args.transfer,
-                                     n_classes=args.n_classes,
-                                     dense_layers=args.dense,
-                                     dense_activation=args.activation_dense,
-                                     dropout=args.dropout,
-                                     regularization=args.l2,
-                                     opt=opt,
-                                     loss=tf.keras.losses.CategoricalCrossentropy(),
-                                     metrics=[tf.keras.metrics.CategoricalAccuracy()])
+        model = create_resnet50_model(image_size=image_size,
+                                      dataset=args.dataset,
+                                      transfer=args.transfer,
+                                      n_classes=args.n_classes,
+                                      dense_layers=args.dense,
+                                      dense_activation=args.activation_dense,
+                                      dropout=args.dropout,
+                                      regularization=args.l2)
     elif args.exp_type == 'xception':
-        return create_xception_model(image_size=image_size,
-                                     dataset=args.dataset,
-                                     transfer=args.transfer,
-                                     n_classes=args.n_classes,
-                                     dense_layers=args.dense,
-                                     dense_activation=args.activation_dense,
-                                     dropout=args.dropout,
-                                     regularization=args.l2,
-                                     opt=opt,
-                                     loss=tf.keras.losses.CategoricalCrossentropy(),
-                                     metrics=[tf.keras.metrics.CategoricalAccuracy()])
+        model = create_xception_model(image_size=image_size,
+                                      dataset=args.dataset,
+                                      transfer=args.transfer,
+                                      n_classes=args.n_classes,
+                                      dense_layers=args.dense,
+                                      dense_activation=args.activation_dense,
+                                      dropout=args.dropout,
+                                      regularization=args.l2)
     else:
         assert False, 'unrecognized model'
+
+    # Compile model and return
+    model.compile(loss=loss, optimizer=opt, metrics=metrics)
+    return model
 
 
 def execute_exp(args=None, multi_gpus=False):
@@ -107,11 +117,11 @@ def execute_exp(args=None, multi_gpus=False):
 
         with mirrored_strategy.scope():
             # Build network: you must provide your own implementation
-            model = create_model(args)
+            model = create_model(args, x_train.shape[0])
     else:
         # Single GPU
         # Build network: you must provide your own implementation
-        model = create_model(args)
+        model = create_model(args, x_train.shape[0])
 
     # Report model structure if verbosity is turned on
     if args.verbose >= 1:

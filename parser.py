@@ -37,6 +37,12 @@ def create_parser():
     parser.add_argument('--momentum', type=float, default=0.9, help='Momentum in optimizer')
     parser.add_argument('--decay', type=float, default=0.0001, help='Weight decay in optimizer')
 
+    # Learning rate decay
+    parser.add_argument('--lrd', action='store_true', help='Turn on learning rate decay')
+    parser.add_argument('--lrd_rate', type=float, default=0.94, help='Learning rate decay rate')
+    parser.add_argument('--lrd_steps', type=int, default=2,
+                        help='Number of epochs after which learning rate decay is applied')
+
     # Learning rate annealing
     parser.add_argument('--lra', action='store_true', help='Turn on learning rate annealing')
     parser.add_argument('--lra_monitor', type=str, default='val_loss',
