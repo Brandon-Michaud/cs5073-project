@@ -43,8 +43,8 @@ def create_resnet50_model(image_size,
     inputs = tensor
 
     # Preprocessing
-    tensor = preprocess_image(tensor)
     tensor = Lambda(lambda image: tf.image.resize(image, (224, 224)))(tensor)
+    tensor = preprocess_image(tensor)
     tensor = tf.keras.applications.resnet50.preprocess_input(tensor)
 
     # Base model
@@ -76,8 +76,8 @@ def create_xception_model(image_size,
     inputs = tensor
 
     # Preprocessing
-    tensor = preprocess_image(tensor)
     tensor = Lambda(lambda image: tf.image.resize(image, (224, 224)))(tensor)
+    tensor = preprocess_image(tensor)
     tensor = tf.keras.applications.xception.preprocess_input(tensor)
 
     # Base model
