@@ -18,4 +18,3 @@
 --lrd
 --lrd_rate=0.94
 --lrd_steps=2
---nogo

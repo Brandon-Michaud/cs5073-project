@@ -11,11 +11,8 @@
 --activation_dense=elu
 --n_classes=100
 --opt=SGD
---epochs=100
---lrate=0.1
+--lrate=0.045
 --momentum=0.9
---decay=0.0001
---lra_monitor=val_loss
---lra_factor=0.1
---lra_patience=10
---lra_min_delta=0.0001
+--lrd
+--lrd_rate=0.94
+--lrd_steps=2
