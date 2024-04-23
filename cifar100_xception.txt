@@ -1,6 +1,4 @@
---project=major_project
 --exp_type=xception
---label=cifar100_xception
 --dataset=cifar100
 --image_size
 32

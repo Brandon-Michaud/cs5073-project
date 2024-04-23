@@ -6,6 +6,11 @@ from tensorflow import keras
 
 
 def preprocess_image(tensor):
+    '''
+    Preprocess image
+    :param tensor: Input image
+    :return: Preprocessed image tensor
+    '''
     tensor = RandomFlip('horizontal')(tensor)
     tensor = RandomRotation(0.1)(tensor)
     tensor = RandomZoom(0.1)(tensor)
@@ -18,15 +23,33 @@ def add_top(tensor,
             n_classes,
             dropout=None,
             regularization=None):
+    '''
+    Add top to base model
+    :param tensor: Output of base model
+    :param dense_layers: Size of dense layers to add to base model; array
+    :param dense_activation: Activation for dense layers
+    :param n_classes: Number of output classes
+    :param dropout: Probability of dropout
+    :param regularization: Strength of L2 regularization
+    :return: Output tensor after top has been added
+    '''
+    # Add regularization
     if regularization is not None:
         regularization = tf.keras.regularizers.l2(l2=regularization)
 
+    # Get 1D tensor from convolution filters
     tensor = GlobalAveragePooling2D()(tensor)
+
+    # Add dense layers
     for n_nodes in dense_layers:
         tensor = Dense(n_nodes, activation=dense_activation, kernel_regularizer=regularization)(tensor)
         if dropout is not None:
             tensor = Dropout(dropout)(tensor)
+
+    # Add output layer
     tensor = Dense(n_classes, activation='softmax')(tensor)
+
+    # Return output tensor
     return tensor
 
 
@@ -38,6 +61,18 @@ def create_resnet50_model(image_size,
                           dense_activation='elu',
                           dropout=None,
                           regularization=None):
+    '''
+    Create resnet50 model
+    :param image_size: Size of input images
+    :param dataset: Dataset for pretrained weights
+    :param transfer: Perform transfer learning
+    :param n_classes: Number of output classes
+    :param dense_layers: Size of dense layers to add to base model; array
+    :param dense_activation: Activation for dense layers
+    :param dropout: Probability of dropout
+    :param regularization: Strength of L2 regularization
+    :return: ResNet50 model
+    '''
     # Input
     tensor = Input(shape=image_size)
     inputs = tensor
@@ -71,6 +106,18 @@ def create_xception_model(image_size,
                           dense_activation='elu',
                           dropout=None,
                           regularization=None):
+    '''
+    Create Xception model
+    :param image_size: Size of input images
+    :param dataset: Dataset for pretrained weights
+    :param transfer: Perform transfer learning
+    :param n_classes: Number of output classes
+    :param dense_layers: Size of dense layers to add to base model; array
+    :param dense_activation: Activation for dense layers
+    :param dropout: Probability of dropout
+    :param regularization: Strength of L2 regularization
+    :return: Xception model
+    '''
     # Input
     tensor = Input(shape=image_size)
     inputs = tensor

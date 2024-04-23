@@ -1,6 +1,4 @@
---project=major_project
 --exp_type=resnet50
---label=cifar100_resnet50
 --dataset=cifar100
 --image_size
 32

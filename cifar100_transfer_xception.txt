@@ -1,6 +1,4 @@
---project=major_project
 --exp_type=xception
---label=cifar100_transfer_xception
 --dataset=imagenet
 --transfer
 --transfer_dataset=cifar100

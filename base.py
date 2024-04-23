@@ -13,33 +13,51 @@ from model import *
 
 
 def generate_fname(args):
+    '''
+    Generate a file path for results based on arguments
+    :param args: Command line arguments
+    :return: File path
+    '''
+    # Indicate this is a transfer experiment
     if args.transfer:
         transfer_str = f'_transfer_{args.transfer_dataset}'
     else:
         transfer_str = ''
 
+    # Create file path based on experiment type and datasets
     if args.exp_type == 'resnet50':
         return f'{args.results_path}/resnet50_dataset_{args.dataset}{transfer_str}'
     elif args.exp_type == 'xception':
         return f'{args.results_path}/xception_dataset_{args.dataset}{transfer_str}'
     else:
-        assert False
+        assert False, 'Unknown experiment type'
 
 
 def load_data(dataset):
+    '''
+    Load dataset
+    :param dataset: Dataset to load
+    :return: Dataset in form x_train, y_train, x_test, y_test
+    '''
     if dataset == 'cifar100':
         (x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
-        x_train = tf.keras.applications.resnet50.preprocess_input(x_train)
-        x_test = tf.keras.applications.resnet50.preprocess_input(x_test)
         y_train = to_categorical(y_train, args.n_classes)
         y_test = to_categorical(y_test, args.n_classes)
         return x_train, y_train, x_test, y_test
+    else:
+        assert False, 'Unknown dataset'
 
 
 def create_model(args, train_epoch_size):
+    '''
+    Creates a model based on the given arguments
+    :param args: Command line arguments
+    :param train_epoch_size: Size of a training epoch
+    :return: Model
+    '''
     image_size = (args.image_size[0], args.image_size[1], args.image_size[2])
 
-    # Create optimizer
+    # Create learning rate
     if args.lrd:
         decay_steps = args.lrd_steps * (train_epoch_size / args.batch)
         learning_rate = tf.keras.optimizers.schedules.ExponentialDecay(args.lrate,
@@ -48,6 +66,8 @@ def create_model(args, train_epoch_size):
                                                                        staircase=True)
     else:
         learning_rate = args.lrate
+
+    # Create optimizer
     if args.opt == 'SGD':
         opt = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=args.momentum, weight_decay=args.decay)
     elif args.opt == 'Adam':
@@ -87,79 +107,51 @@ def create_model(args, train_epoch_size):
 
 
 def execute_exp(args=None, multi_gpus=False):
-    # Check the arguments
-    if args is None:
-        # Case where no args are given (usually, because we are calling from within Jupyter)
-        #  In this situation, we just use the default arguments
-        parser = create_parser()
-        args = parser.parse_args([])
-
+    '''
+    Execute experiment based on given arguments
+    :param args: Command line arguments
+    :param multi_gpus: Use multiple GPUs (boolean)
+    :return: Trained model
+    '''
     # Scale the batch size with the number of GPUs
     if multi_gpus > 1:
         args.batch = args.batch * multi_gpus
 
-    # Create the TF datasets for training, validation, testing
-
-    if args.verbose >= 3:
-        print('Starting data flow')
-
-    # Load individual files (all objects)
+    # Load dataset
     x_train, y_train, x_test, y_test = load_data(args.transfer_dataset if args.transfer else args.dataset)
 
-    # Build the model
-    if args.verbose >= 3:
-        print('Building network')
-
-    # Create the network
+    # Create model using the command line arguments
     if multi_gpus > 1:
-        # Multiple GPUs
         mirrored_strategy = tf.distribute.MirroredStrategy()
-
         with mirrored_strategy.scope():
-            # Build network: you must provide your own implementation
             model = create_model(args, x_train.shape[0])
     else:
-        # Single GPU
-        # Build network: you must provide your own implementation
         model = create_model(args, x_train.shape[0])
 
     # Report model structure if verbosity is turned on
     if args.verbose >= 1:
         print(model.summary())
 
-    print(args)
-
     # Output file base and pkl file
     fbase = generate_fname(args)
     print(fbase)
-    fname_out = "%s_results.pkl" % fbase
 
     # Plot the model
     if args.render:
         render_fname = '%s_model_plot.png' % fbase
         plot_model(model, to_file=render_fname, show_shapes=True, show_layer_names=True)
 
-    # Perform the experiment?
+    # Abort experiment if indicated by arguments
     if args.nogo:
-        # No!
         print("NO GO")
-        print(fbase)
         return
 
-    # Check if output file already exists
-    if not args.force and os.path.exists(fname_out):
-        # Results file does exist: exit
-        print("File %s already exists" % fname_out)
-        return
-
-    #####
-    # Start wandb
-    run = wandb.init(project=args.project,
-                     name=f'{args.exp_type}_dataset_{args.dataset}{f"_transfer_{args.transfer_dataset}" if args.transfer else ""}',
-                     notes=fbase, config=vars(args))
-
-    # Log hostname
-    wandb.log({'hostname': socket.gethostname()})
+    # Start weights and biases
+    if args.wandb:
+        run = wandb.init(project=args.project,
+                         name=f'{args.exp_type}_dataset_{args.dataset}{f"_transfer_{args.transfer_dataset}" if args.transfer else ""}',
+                         notes=fbase, config=vars(args))
+        wandb.log({'hostname': socket.gethostname()})
 
     # Callbacks
     cbs = []
@@ -172,14 +164,12 @@ def execute_exp(args=None, multi_gpus=False):
                                                          patience=args.lra_patience, min_delta=args.lra_min_delta)
         cbs.append(reduce_lr_cb)
 
-    # Weights and Biases
-    wandb_metrics_cb = wandb.keras.WandbMetricsLogger()
-    cbs.append(wandb_metrics_cb)
+    # Log training to Weights and Biases
+    if args.wandb:
+        wandb_metrics_cb = wandb.keras.WandbMetricsLogger()
+        cbs.append(wandb_metrics_cb)
 
-    if args.verbose >= 3:
-        print('Fitting model')
-
-    # Learn
+    # Train model
     history = model.fit(x=x_train,
                         y=y_train,
                         epochs=args.epochs,
@@ -190,27 +180,33 @@ def execute_exp(args=None, multi_gpus=False):
                         callbacks=cbs)
 
     # Generate results data
-    # results = {}
-    #
-    # # Test set
-    # if ds_testing is not None:
-    #     print('#################')
-    #     print('Testing')
-    #     results['predict_testing_eval'] = model.evaluate(ds_testing)
-    #     wandb.log({'final_test_loss': results['predict_testing_eval'][0]})
-    #     wandb.log({'final_test_sparse_categorical_accuracy': results['predict_testing_eval'][1]})
-    #
-    # # Save results
-    # fbase = generate_fname(args)
-    # results['fname_base'] = fbase
-    # with open("%s_results.pkl" % fbase, "wb") as fp:
-    #     pickle.dump(results, fp)
+    results = {
+        'history': history
+    }
+
+    # Test set evaluation
+    test_eval = model.evaluate(x=x_test,
+                               y=y_test,
+                               batch_size=args.batch,
+                               verbose=args.verbose >= 2)
+    results['test_eval'] = test_eval
+
+    # Log results to Weights and Biases
+    if args.wandb:
+        wandb.log({'final_test_loss': test_eval[0]})
+        wandb.log({'final_test_sparse_categorical_accuracy': test_eval[1]})
+
+    # Save results
+    with open("%s_results.pkl" % fbase, "wb") as fp:
+        pickle.dump(results, fp)
 
     # Save model
     if args.save_model:
         model.save("%s_model" % fbase)
 
-    wandb.finish()
+    # End Weights and Biases session
+    if args.wandb:
+        wandb.finish()
 
     return model
 
@@ -219,9 +215,6 @@ if __name__ == "__main__":
     # Parse and check incoming arguments
     parser = create_parser()
     args = parser.parse_args()
-
-    if args.verbose >= 3:
-        print('Arguments parsed')
 
     # Turn off GPU
     if not args.gpu or "CUDA_VISIBLE_DEVICES" not in os.environ.keys():
@@ -244,4 +237,5 @@ if __name__ == "__main__":
         tf.config.threading.set_intra_op_parallelism_threads(args.cpus_per_task)
         tf.config.threading.set_inter_op_parallelism_threads(args.cpus_per_task)
 
-    execute_exp(args, multi_gpus=n_visible_devices)
+    # Execute experiment
+    execute_exp(args, multi_gpus=n_visible_devices > 1)

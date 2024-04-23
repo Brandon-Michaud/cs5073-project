@@ -2,10 +2,15 @@ import argparse
 
 
 def create_parser():
+    '''
+    Create command line argument parser for major project
+    :return: Command line argument parser
+    '''
     # Parse the command-line arguments
     parser = argparse.ArgumentParser(description='MajorProject', fromfile_prefix_chars='@')
 
     # High-level info for WandB
+    parser.add_argument('--wandb', action='store_true', help='Use Weights and Biases')
     parser.add_argument('--project', type=str, default='major_project', help='WandB project name')
 
     # High-level commands
@@ -21,7 +26,6 @@ def create_parser():
     parser.add_argument('--exp_type', type=str, default=None, help="Experiment type")
     parser.add_argument('--transfer', action='store_true', help='Do transfer learning')
 
-    parser.add_argument('--label', type=str, default=None, help="Extra label to add to output files")
     parser.add_argument('--dataset', type=str, default='imagenet', help='Data set to use')
     parser.add_argument('--transfer_dataset', type=str, default='imagenet',
                         help='Data set to use for transfer learning')
