@@ -153,12 +153,14 @@ def execute_exp(args=None, multi_gpus=False):
 
     # Callbacks
     cbs = []
-    early_stopping_cb = keras.callbacks.EarlyStopping(patience=args.es_patience, restore_best_weights=True,
-                                                      min_delta=args.es_min_delta, monitor=args.es_monitor)
-    reduce_lr_cb = keras.callbacks.ReduceLROnPlateau(monitor=args.lra_monitor, factor=args.lra_factor,
-                                                     patience=args.lra_patience, min_delta=args.lra_min_delta)
-    cbs.append(early_stopping_cb)
-    cbs.append(reduce_lr_cb)
+    if args.es:
+        early_stopping_cb = keras.callbacks.EarlyStopping(patience=args.es_patience, restore_best_weights=True,
+                                                          min_delta=args.es_min_delta, monitor=args.es_monitor)
+        cbs.append(early_stopping_cb)
+    if args.lra:
+        reduce_lr_cb = keras.callbacks.ReduceLROnPlateau(monitor=args.lra_monitor, factor=args.lra_factor,
+                                                         patience=args.lra_patience, min_delta=args.lra_min_delta)
+        cbs.append(reduce_lr_cb)
 
     # Weights and Biases
     wandb_metrics_cb = wandb.keras.WandbMetricsLogger()
