@@ -38,6 +38,7 @@ def create_parser():
     parser.add_argument('--decay', type=float, default=0.0001, help='Weight decay in optimizer')
 
     # Learning rate annealing
+    parser.add_argument('--lra', action='store_true', help='Turn on learning rate annealing')
     parser.add_argument('--lra_monitor', type=str, default='val_loss',
                         help='What to monitor for learning rate annealing')
     parser.add_argument('--lra_factor', type=float, default=0.1,
@@ -58,6 +59,7 @@ def create_parser():
     parser.add_argument('--l2', type=float, default=None, help="L2 regularization parameter")
 
     # Early stopping
+    parser.add_argument('--es', action='store_true', help='Turn on early stopping')
     parser.add_argument('--es_min_delta', type=float, default=0.0, help="Minimum delta for early termination")
     parser.add_argument('--es_patience', type=int, default=100, help="Patience for early termination")
     parser.add_argument('--es_monitor', type=str, default="val_loss", help="Metric to monitor for early termination")
