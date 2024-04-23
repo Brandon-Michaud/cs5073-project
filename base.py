@@ -10,6 +10,7 @@ from tensorflow.keras.utils import to_categorical
 
 from parser import *
 from model import *
+from data import *
 
 
 def generate_fname(args):
@@ -24,28 +25,21 @@ def generate_fname(args):
     else:
         transfer_str = ''
 
+    # Indicate this is a Gaussian noise experiment
+    if args.gaussian_noise:
+        gauss_noise_str = f'_gauss_noise_{args.gauss_noise_stddev}'
+    else:
+        gauss_noise_str = ''
+
+    # Indicate this is a mislabeling noise experiment
+    if args.mislabel_noise:
+        mislabel_noise_str = f'_mislabel_noise_{args.mislabel_noise_rate}'
+    else:
+        mislabel_noise_str = ''
+
     # Create file path based on experiment type and datasets
-    if args.exp_type == 'resnet50':
-        return f'{args.results_path}/resnet50_dataset_{args.dataset}{transfer_str}'
-    elif args.exp_type == 'xception':
-        return f'{args.results_path}/xception_dataset_{args.dataset}{transfer_str}'
-    else:
-        assert False, 'Unknown experiment type'
-
-
-def load_data(dataset):
-    '''
-    Load dataset
-    :param dataset: Dataset to load
-    :return: Dataset in form x_train, y_train, x_test, y_test
-    '''
-    if dataset == 'cifar100':
-        (x_train, y_train), (x_test, y_test) = keras.datasets.cifar100.load_data()
-        y_train = to_categorical(y_train, args.n_classes)
-        y_test = to_categorical(y_test, args.n_classes)
-        return x_train, y_train, x_test, y_test
-    else:
-        assert False, 'Unknown dataset'
+    return (f'{args.results_path}/{args.exp_type}_dataset_{args.dataset}{transfer_str}{gauss_noise_str}'
+            f'{mislabel_noise_str}')
 
 
 def create_model(args, train_epoch_size):
@@ -119,6 +113,16 @@ def execute_exp(args=None, multi_gpus=False):
 
     # Load dataset
     x_train, y_train, x_test, y_test = load_data(args.transfer_dataset if args.transfer else args.dataset)
+
+    # Add noise
+    if args.gaussian_noise:
+        x_train = add_gaussian_noise(x_train, mean=0, stddev=args.gaussian_noise_stddev, min_val=0, max_val=255)
+    if args.mislabel_noise:
+        y_train = add_label_noise(y_train, args.mislabel_noise_rate, args.n_classes)
+
+    # Convert sparse representation to categorical
+    y_train = to_categorical(y_train, args.n_classes)
+    y_test = to_categorical(y_test, args.n_classes)
 
     # Create model using the command line arguments
     if multi_gpus > 1:

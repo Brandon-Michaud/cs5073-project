@@ -24,11 +24,16 @@ def create_parser():
 
     # High-level experiment configuration
     parser.add_argument('--exp_type', type=str, default=None, help="Experiment type")
-    parser.add_argument('--transfer', action='store_true', help='Do transfer learning')
-
     parser.add_argument('--dataset', type=str, default='imagenet', help='Data set to use')
+    parser.add_argument('--transfer', action='store_true', help='Do transfer learning')
     parser.add_argument('--transfer_dataset', type=str, default='imagenet',
                         help='Data set to use for transfer learning')
+    parser.add_argument('--gaussian_noise', action='store_true', help='Add Gaussian noise to training set')
+    parser.add_argument('--gaussian_noise_stddev', type=float, default=10,
+                        help='Standard deviation of gaussian noise')
+    parser.add_argument('--mislabel_noise', action='store_true', help='Add mislabeling noise to training set')
+    parser.add_argument('--mislabel_noise_rate', type=int, default=0.2,
+                        help='Mislabeling noise rate')
     parser.add_argument('--image_size', nargs=3, type=int, default=[128, 128, 3],
                         help="Size of input images (rows, cols, channels)")
     parser.add_argument('--n_classes', type=int, default=10, help='Number of output classes')
