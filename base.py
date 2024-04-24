@@ -26,7 +26,7 @@ def generate_fname(args):
         transfer_str = ''
 
     # Indicate this is a Gaussian noise experiment
-    if args.gaussian_noise:
+    if args.gauss_noise:
         gauss_noise_str = f'_gauss_noise_{args.gauss_noise_stddev}'
     else:
         gauss_noise_str = ''
