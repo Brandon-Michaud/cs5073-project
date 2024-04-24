@@ -38,8 +38,8 @@ def generate_fname(args):
         mislabel_noise_str = ''
 
     # Create file path based on experiment type and datasets
-    return (f'{args.results_path}/{args.exp_type}_dataset_{args.dataset}{transfer_str}{gauss_noise_str}'
-            f'{mislabel_noise_str}')
+    label = f'{args.exp_type}_dataset_{args.dataset}{transfer_str}{gauss_noise_str}{mislabel_noise_str}'
+    return label, f'{args.results_path}/{label}'
 
 
 def create_model(args, train_epoch_size):
@@ -137,7 +137,7 @@ def execute_exp(args=None, multi_gpus=False):
         print(model.summary())
 
     # Output file base and pkl file
-    fbase = generate_fname(args)
+    label, fbase = generate_fname(args)
     print(fbase)
 
     # Plot the model
@@ -153,7 +153,7 @@ def execute_exp(args=None, multi_gpus=False):
     # Start weights and biases
     if args.wandb:
         run = wandb.init(project=args.project,
-                         name=f'{args.exp_type}_dataset_{args.dataset}{f"_transfer_{args.transfer_dataset}" if args.transfer else ""}',
+                         name=label,
                          notes=fbase, config=vars(args))
         wandb.log({'hostname': socket.gethostname()})
 
