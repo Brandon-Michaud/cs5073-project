@@ -188,7 +188,6 @@ def execute_exp(args=None, multi_gpus=False):
 
     # Generate results data
     results = {
-        'history': history,
         'train_time': end_time - start_time
     }
 
