@@ -18,5 +18,3 @@
 --lra_factor=0.1
 --lra_patience=10
 --lra_min_delta=0.0001
---gauss_noise
---gauss_noise_stddev=10
