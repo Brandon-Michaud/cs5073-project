@@ -9,7 +9,7 @@
 --activation_dense=elu
 --n_classes=100
 --opt=SGD
---epochs=1
+--epochs=100
 --lrate=0.1
 --momentum=0.9
 --decay=0.0001
