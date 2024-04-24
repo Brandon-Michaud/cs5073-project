@@ -16,12 +16,6 @@ def load_data(dataset):
     elif dataset == 'cifar10':
         (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
         return x_train, y_train, x_test, y_test
-    elif dataset == 'mnist':
-        (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-        return x_train, y_train, x_test, y_test
-    elif dataset == 'fashion_mnist':
-        (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
-        return x_train, y_train, x_test, y_test
     else:
         assert False, 'Unknown dataset'
 
