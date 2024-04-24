@@ -115,8 +115,8 @@ def execute_exp(args=None, multi_gpus=False):
     x_train, y_train, x_test, y_test = load_data(args.transfer_dataset if args.transfer else args.dataset)
 
     # Add noise
-    if args.gaussian_noise:
-        x_train = add_gaussian_noise(x_train, mean=0, stddev=args.gaussian_noise_stddev, min_val=0, max_val=255)
+    if args.gauss_noise:
+        x_train = add_gaussian_noise(x_train, mean=0, stddev=args.gauss_noise_stddev, min_val=0, max_val=255)
     if args.mislabel_noise:
         y_train = add_label_noise(y_train, args.mislabel_noise_rate, args.n_classes)
 

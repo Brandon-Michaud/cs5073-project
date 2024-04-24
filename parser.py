@@ -28,8 +28,8 @@ def create_parser():
     parser.add_argument('--transfer', action='store_true', help='Do transfer learning')
     parser.add_argument('--transfer_dataset', type=str, default='imagenet',
                         help='Data set to use for transfer learning')
-    parser.add_argument('--gaussian_noise', action='store_true', help='Add Gaussian noise to training set')
-    parser.add_argument('--gaussian_noise_stddev', type=float, default=10,
+    parser.add_argument('--gauss_noise', action='store_true', help='Add Gaussian noise to training set')
+    parser.add_argument('--gauss_noise_stddev', type=float, default=10,
                         help='Standard deviation of gaussian noise')
     parser.add_argument('--mislabel_noise', action='store_true', help='Add mislabeling noise to training set')
     parser.add_argument('--mislabel_noise_rate', type=int, default=0.2,
