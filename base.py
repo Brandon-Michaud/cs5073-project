@@ -2,6 +2,7 @@ import os
 import pickle
 import wandb
 import socket
+import time
 import tensorflow as tf
 
 from tensorflow.keras.utils import plot_model
@@ -174,6 +175,7 @@ def execute_exp(args=None, multi_gpus=False):
         cbs.append(wandb_metrics_cb)
 
     # Train model
+    start_time = time.time()
     history = model.fit(x=x_train,
                         y=y_train,
                         epochs=args.epochs,
@@ -182,10 +184,12 @@ def execute_exp(args=None, multi_gpus=False):
                         validation_data=(x_test, y_test),
                         validation_steps=None,
                         callbacks=cbs)
+    end_time = time.time()
 
     # Generate results data
     results = {
-        'history': history
+        'history': history,
+        'train_time': end_time - start_time
     }
 
     # Test set evaluation
