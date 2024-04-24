@@ -18,3 +18,4 @@
 --lra_factor=0.1
 --lra_patience=10
 --lra_min_delta=0.0001
+--save_model
