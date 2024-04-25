@@ -8,8 +8,8 @@
 1024
 --activation_dense=elu
 --n_classes=100
---gauss_noise
---gauss_noise_stddev=10
+--mislabel_noise
+--mislabel_noise_rate=0.025
 --opt=SGD
 --epochs=100
 --lrate=0.1
