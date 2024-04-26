@@ -1,5 +1,5 @@
 --exp_type=xception
---dataset=cifar100
+--dataset=cifar10
 --image_size
 32
 32
@@ -7,7 +7,7 @@
 --dense
 1024
 --activation_dense=elu
---n_classes=100
+--n_classes=10
 --mislabel_noise
 --mislabel_noise_rate=0.025
 --opt=SGD
