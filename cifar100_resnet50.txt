@@ -1,5 +1,5 @@
 --exp_type=resnet50
---dataset=cifar10
+--dataset=cifar100
 --image_size
 32
 32
@@ -7,7 +7,9 @@
 --dense
 1024
 --activation_dense=elu
---n_classes=10
+--n_classes=100
+--gauss_noise
+--gauss_noise_stddev=10
 --opt=SGD
 --epochs=100
 --lrate=0.1
